@@ -5,19 +5,18 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { handlePageSize, handlePageNumber, handleSelectPageSizeVisability } from './../../actions/paginationActions';
-import { fetchCollection } from '../../actions/fetchDataActions';
+import { HandlePageSize, handlePageNumber, handleSelectPageSizeVisability } from '../../actions/paginationActions';
+import { fetchCollection } from '../../actions/pictureActions';
 import paginationStyles from './PaginationStyles';
 
 const Pagination = ({
   classes,
   pageNumber,
   pageSize,
-  handlePageSize,
+  HandlePageSize,
   fetchCollection,
   orderByParam,
   queryParam,
@@ -27,7 +26,7 @@ const Pagination = ({
 }) => {
   const onChangePageSize = (event) => {
     const pageSize = event.target.value;
-    handlePageSize(pageSize);
+    HandlePageSize(pageSize);
     fetchCollection(pageSize, pageNumber, orderByParam, queryParam);
   };
 
@@ -84,33 +83,20 @@ const Pagination = ({
   );
 };
 
-Pagination.propTypes = {
-  classes: PropTypes.object.isRequired,
-  pageNumber: PropTypes.number,
-  pageSize: PropTypes.number,
-  queryParam: PropTypes.string,
-  orderByParam: PropTypes.string,
-  isPageSizeListOpened: PropTypes.bool,
-  fetchCollection: PropTypes.func,
-  handlePageSize: PropTypes.func,
-  handlePageNumber: PropTypes.func,
-  handleSelectPageSizeVisability: PropTypes.func,
-};
-
 const mapStateToProps = (state) => {
   return {
-    pageNumber: state.collectionState.pageNumber,
-    pageSize: state.collectionState.pageSize,
-    queryParam: state.collectionState.queryParam,
-    orderByParam: state.collectionState.orderByParam,
-    isPageSizeListOpened: state.collectionState.isPageSizeListOpened,
+    pageNumber: state.paginationState.pageNumber,
+    pageSize: state.paginationState.pageSize,
+    queryParam: state.searchState.queryParam,
+    orderByParam: state.searchState.orderByParam,
+    isPageSizeListOpened: state.paginationState.isPageSizeListOpened,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       fetchCollection,
-      handlePageSize,
+      HandlePageSize,
       handlePageNumber,
       handleSelectPageSizeVisability,
     },

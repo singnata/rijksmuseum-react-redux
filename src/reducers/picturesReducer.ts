@@ -1,33 +1,25 @@
 import {
+  PicturesState,
+  FetchCollectionTypes,
+  FetchPictureInfoTypes,
+  TogglePopUpTargetToSelectedPictureTypes,
+  SetIsPictureTitleShownPropertyTypes,
   FETCH_COLLECTION_REQUEST,
   FETCH_COLLECTION_SUCCESS,
   FETCH_COLLECTION_FAILURE,
   FETCH_PICTURE_INFO_REQUEST,
   FETCH_PICTURE_INFO_FAILURE,
   FETCH_PICTURE_INFO_SUCCESS,
-  HANDLE_PAGE_SIZE,
-  HANDLE_PAGE_NUMBER,
-  HANDLE_SEARCH,
-  HANDLE_ORDER,
-  HANDLE_SELECT_PAGE_SIZE_VISABILITY,
-  HANDLE_SELECT_ORDER_BY_LIST_VISABILITY,
   OPEN_PICTURE_DETAILS_POP_UP,
   CLOSE_PICTURE_DETAILS_POP_UP,
   SHOW_PICTURE_TITLE,
   HIDE_PICTURE_TITLE,
-  RESET_QUERY_PARAM,
-} from './../constants/actionTypes';
+} from '../constants/actionTypes';
 
-const initialState = {
+const initialState: PicturesState = {
   isError: false,
-  pictureList: [],
+  pictureList: {},
   isLoading: false,
-  pageNumber: 1,
-  pageSize: 50,
-  queryParam: '',
-  orderByParam: '',
-  isPageSizeListOpened: false,
-  isOrderByListOpened: false,
   isMainContentBlurred: false,
   picture: null,
 };
@@ -76,7 +68,7 @@ const setIsPictureTitleShownProperty = (state, action, value) => {
   };
 };
 
-const collectionReducer = (state = initialState, action) => {
+const picturesReducer = (state = initialState, action: FetchCollectionTypes | SetIsPictureTitleShownPropertyTypes | TogglePopUpTargetToSelectedPictureTypes | FetchPictureInfoTypes): PicturesState => {
   switch (action.type) {
     case FETCH_COLLECTION_REQUEST:
       return { ...state, isLoading: true, isError: false };
@@ -90,18 +82,6 @@ const collectionReducer = (state = initialState, action) => {
       return { ...state, picture: action.picture, isLoading: false };
     case FETCH_PICTURE_INFO_FAILURE:
       return { ...state, isError: true };
-    case HANDLE_PAGE_SIZE:
-      return { ...state, pageSize: action.pageSize };
-    case HANDLE_PAGE_NUMBER:
-      return { ...state, pageNumber: action.pageNumber };
-    case HANDLE_SEARCH:
-      return { ...state, queryParam: action.queryParam };
-    case HANDLE_ORDER:
-      return { ...state, orderByParam: action.orderByParam };
-    case HANDLE_SELECT_PAGE_SIZE_VISABILITY:
-      return { ...state, isPageSizeListOpened: !state.isPageSizeListOpened };
-    case HANDLE_SELECT_ORDER_BY_LIST_VISABILITY:
-      return { ...state, isOrderByListOpened: !state.isOrderByListOpened };
     case OPEN_PICTURE_DETAILS_POP_UP:
       return togglePopUpTargetToSelectedPicture(state, action);
     case CLOSE_PICTURE_DETAILS_POP_UP:
@@ -110,11 +90,9 @@ const collectionReducer = (state = initialState, action) => {
       return setIsPictureTitleShownProperty(state, action, true);
     case HIDE_PICTURE_TITLE:
       return setIsPictureTitleShownProperty(state, action, false);
-    case RESET_QUERY_PARAM:
-      return { ...state, queryParam: '' };
 
     default:
       return state;
   }
 };
-export default collectionReducer;
+export default picturesReducer;

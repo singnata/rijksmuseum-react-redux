@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
-import { handleSearchParams } from './../actions/searchActions';
-import { fetchCollection } from '../actions/fetchDataActions';
+import { handleSearchParams } from '../actions/searchActions';
+import { fetchCollection } from '../actions/pictureActions';
+import { AppState } from './../reducers/index';
 import HeaderTitle from './Header/HeaderTitle';
 import PictureList from './Collection/PictureList';
 import Search from './Header/Search';
@@ -21,7 +21,23 @@ const styles = () => ({
   },
 });
 
-class App extends Component {
+interface AppProps {
+  collection: {
+    artObjects: []
+  }
+  isLoading: boolean,
+  isMainContentBlurred: boolean
+  pageSize: number;
+  pageNumber: number;
+  orderByParam: string;
+  match?: any;
+  fetchCollection: typeof fetchCollection;
+  classes: any;
+
+  handleSearchParams: typeof handleSearchParams;
+}
+
+class App extends Component<AppProps> {
   componentDidMount() {
     const { pageSize, pageNumber, orderByParam, match, fetchCollection, handleSearchParams } = this.props;
     if (match.params.objectType) {
@@ -32,23 +48,17 @@ class App extends Component {
     fetchCollection();
   }
 
-  handleBlurContent = () => {
-    this.setState({
-      shouldMainContentBeBlurred: !this.state.shouldMainContentBeBlurred,
-    });
-  };
-
   render() {
-    console.log('render')
-    const { classes, collection, isLoading, isMainContentBlurred } = this.props;
+    const { classes } = this.props;
+    const { collection, isLoading, isMainContentBlurred } = this.props;
 
     const blurMainContent = isMainContentBlurred ? classes.isBlurred : null;
     const isThereCollection = collection.artObjects && collection.artObjects.length !== 0 && !isLoading;
-    const pictureList = isThereCollection ? (
+    const pictureListL = isThereCollection ? (
       <PictureList />
     ) : (
-      <div className="no-found">No art object could be found by your query</div>
-    );
+        <div className="no-found">No art object could be found by your query</div>
+      );
 
     return (
       <Fragment>
@@ -56,7 +66,7 @@ class App extends Component {
           <HeaderTitle />
           {!isLoading && <Search />}
 
-          {isLoading ? <CircularProgress className={classes.progress} color="secondary" /> : pictureList}
+          {isLoading ? <CircularProgress className={classes.progress} color="secondary" /> : pictureListL}
 
           <Pagination />
         </div>
@@ -65,21 +75,17 @@ class App extends Component {
   }
 }
 
-App.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 const mapStateToProps = (state) => {
   return {
-    collection: state.collectionState.pictureList,
-    isLoading: state.collectionState.isLoading,
-    isMainContentBlurred: state.collectionState.isMainContentBlurred,
-    pageSize: state.collectionState.pageSize,
-    pageNumber: state.collectionState.pageNumber,
-    orderByParam: state.collectionState.orderByParam,
+    collection: state.picturesState.pictureList,
+    isLoading: state.picturesState.isLoading,
+    isMainContentBlurred: state.picturesState.isMainContentBlurred,
+    pageSize: state.paginationState.pageSize,
+    pageNumber: state.paginationState.pageNumber,
+    orderByParam: state.searchState.orderByParam,
   };
 };
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return bindActionCreators(
     {
       fetchCollection,

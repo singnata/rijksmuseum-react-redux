@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -16,9 +15,11 @@ import {
   handleOrderByParams,
   handleSearchParams,
   resetQueryParam,
-} from './../../actions/searchActions';
-import { fetchCollection } from '../../actions/fetchDataActions';
+} from '../../actions/searchActions';
+import { fetchCollection } from '../../actions/pictureActions';
 import headerStyles from './HeaderStyles';
+
+export type onChangeOrderByInputParam = React.SyntheticEvent<{ value: string }>;
 
 const theme = createMuiTheme({
   typography: {
@@ -38,6 +39,20 @@ const theme = createMuiTheme({
   },
 });
 
+interface SearchProps {
+  classes?: any;
+  isOrderByListOpened: boolean,
+  handleSelectOrderByVisability: typeof handleSelectOrderByVisability,
+  handleOrderByParams: typeof handleOrderByParams,
+  pageNumber: number,
+  pageSize: number,
+  queryParam: string,
+  orderByParam: string,
+  fetchCollection: typeof fetchCollection,
+  handleSearchParams: typeof handleSearchParams,
+  resetQueryParam: typeof resetQueryParam
+}
+
 const Search = ({
   classes,
   isOrderByListOpened,
@@ -50,28 +65,29 @@ const Search = ({
   fetchCollection,
   handleSearchParams,
   resetQueryParam,
-}) => {
-  const onChangeOrderByInput = (event) => {
+}: SearchProps) => {
+
+  const onChangeOrderByInput = (event: React.ChangeEvent<{ value: unknown | string }>) => {
     event.preventDefault();
-    const orderByParam = event.target.value;
+    const orderByParam = event.target.value as string;
     handleOrderByParams(orderByParam);
     fetchCollection(pageSize, pageNumber, orderByParam, queryParam);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     fetchCollection(pageSize, pageNumber, orderByParam, queryParam);
   };
 
-  const onChangeSearchInput = (event) => {
+  const onChangeSearchInput = (event: React.ChangeEvent<{ value: unknown | string }>) => {
     event.preventDefault();
     handleSearchParams(event.target.value);
   };
 
-  const handleResetSearchQueryParam = (event) => {
+  const handleResetSearchQueryParam = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     resetQueryParam();
-    fetchCollection();
+    fetchCollection(pageSize, pageNumber, orderByParam, '');
   };
 
   return (
@@ -122,27 +138,15 @@ const Search = ({
   );
 };
 
-Search.propTypes = {
-  classes: PropTypes.object.isRequired,
-  isOrderByListOpened: PropTypes.bool,
-  handleSelectOrderByVisability: PropTypes.func,
-  handleOrderByParams: PropTypes.func,
-  pageNumber: PropTypes.number,
-  pageSize: PropTypes.number,
-  queryParam: PropTypes.string,
-  orderByParam: PropTypes.string,
-  fetchCollection: PropTypes.func,
-  handleSearchParams: PropTypes.func,
-  resetQueryParam: PropTypes.func,
-};
+
 
 const mapStateToProps = (state) => {
   return {
-    pageNumber: state.collectionState.pageNumber,
-    pageSize: state.collectionState.pageSize,
-    queryParam: state.collectionState.queryParam,
-    orderByParam: state.collectionState.orderByParam,
-    isOrderByListOpened: state.collectionState.isOrderByListOpened,
+    pageNumber: state.searchState.pageNumber,
+    pageSize: state.searchState.pageSize,
+    queryParam: state.searchState.queryParam,
+    orderByParam: state.searchState.orderByParam,
+    isOrderByListOpened: state.searchState.isOrderByListOpened,
   };
 };
 const mapDispatchToProps = (dispatch) => {

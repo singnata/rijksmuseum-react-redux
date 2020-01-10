@@ -8,7 +8,7 @@ export const handleSelectPageSizeVisability = () => (dispatch) => {
   dispatch({ type: HANDLE_SELECT_PAGE_SIZE_VISABILITY });
 };
 
-export const handlePageSize = (pageSize) => (dispatch) => {
+export const HandlePageSize = (pageSize) => (dispatch) => {
   dispatch({ type: HANDLE_PAGE_SIZE, pageSize });
 };
 

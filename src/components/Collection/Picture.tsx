@@ -1,5 +1,10 @@
-import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
+declare module 'react' {
+  interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
+    variant?: string;
+  }
+}
+
+import * as React from 'react';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Popover from '@material-ui/core/Popover';
 import PictureDetailsPopUp from './PictureDetailsPopUp';
@@ -29,23 +34,37 @@ const theme = createMuiTheme({
   },
 });
 
-const Picture = ({
-  classes,
-  picture,
-  openPictureDetailsPopUp,
-  showPictureTitle,
-  hidePictureTitle,
-  selectedPicture,
-  show,
-}) => {
+interface PictureProps {
+  classes?: any;
+  picture: {
+    isPictureTitleShown: boolean,
+    hasImage: any,
+    title: string,
+    headerImage: {
+      url: string
+    },
+    longTitle: string,
+    popUpTarget: any,
+    id: string,
+    productionPlaces: [],
+    principalOrFirstMaker: string,
+    objectNumber: string
+  },
+  openPictureDetailsPopUp: typeof openPictureDetailsPopUp,
+  showPictureTitle: typeof showPictureTitle,
+  hidePictureTitle: typeof hidePictureTitle,
+}
+
+const Picture = withStyles(collectionStyles)(({ classes, picture, openPictureDetailsPopUp, showPictureTitle, hidePictureTitle }: PictureProps) => {
   const pictureTitle = picture.isPictureTitleShown ? classes.titleIsVisible : classes.titleIsHidden;
   const image = picture.hasImage ? (
     <img src={picture.headerImage.url} alt={picture.title} className={classes.pictureImage} />
   ) : (
-    <div className={classes.noImage}>No image</div>
-  );
+      <div className={classes.noImage}>No image</div>
+    );
 
-  const handleOpenPopUp = (event) => {
+  const handleOpenPopUp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.preventDefault();
     openPictureDetailsPopUp({ selectedPicture: picture, popUpTarget: event.currentTarget });
   };
 
@@ -57,12 +76,14 @@ const Picture = ({
     hidePictureTitle(picture);
   };
 
+
+
   return (
-    <Fragment>
+    <React.Fragment>
       <div
         variant="contained"
         className={classes.pictureContainer}
-        onClick={(event) => handleOpenPopUp(event)}
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => handleOpenPopUp(event)}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
@@ -86,17 +107,18 @@ const Picture = ({
           <PictureDetailsPopUp picture={picture} />
         </Popover>
       </MuiThemeProvider>
-    </Fragment>
+    </React.Fragment>
   );
-};
+});
 
-Picture.propTypes = {
-  classes: PropTypes.object.isRequired,
-  openPictureDetailsPopUp: PropTypes.func,
-  showPictureTitle: PropTypes.func,
-  hidePictureTitle: PropTypes.func,
+const mapStateToProps = (state, ownState) => {
+  return {
+    picture: ownState.picture,
+    key: ownState.key,
+    classes: ownState.classes,
+    collection: state.picturesState.pictureList,
+  };
 };
-
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
@@ -109,6 +131,6 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
-)(withStyles(collectionStyles)(Picture));
+)(Picture);

@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, Theme } from '@material-ui/core/styles';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import GridListTile from '@material-ui/core/GridListTile';
@@ -9,7 +8,7 @@ import GridList from '@material-ui/core/GridList';
 import Picture from './Picture';
 import collectionStyles from './CollectionStyles';
 
-const theme = createMuiTheme({
+const theme: Theme = createMuiTheme({
   typography: {
     useNextVariants: true,
   },
@@ -23,33 +22,42 @@ const theme = createMuiTheme({
   },
 });
 
-const PictureList = ({ classes, collection }) => {
+interface Picture {
+  some?: string,
+  id: string
+}
+
+interface PictureListProps {
+  classes?: any;
+  collection: {
+    artObjects: Picture[]
+  },
+
+}
+
+const PictureList = withStyles(collectionStyles)(({ classes, collection }: PictureListProps) => {
   return (
     <MuiThemeProvider theme={theme}>
       <div className={classes.collectionContainer}>
         <GridList spacing={20} cols={5} cellHeight={100}>
-          {collection.artObjects.map((picture) => {
+          {collection.artObjects.map((picture, index) => {
             return (
-              <GridListTile col={5} key={picture.id}>
+              <GridListTile key={picture.id}>
                 <Picture picture={picture} />
               </GridListTile>
-            );
+            )
           })}
         </GridList>
       </div>
     </MuiThemeProvider>
   );
-};
+});
 
-PictureList.propTypes = {
-  classes: PropTypes.object.isRequired,
-  handleBlurContent: PropTypes.func,
-  collection: PropTypes.object,
-};
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownState) => {
   return {
-    collection: state.collectionState.pictureList,
+    collection: state.picturesState.pictureList,
+    classes: ownState.classes,
   };
 };
 
-export default connect(mapStateToProps)(withStyles(collectionStyles)(PictureList));
+export default connect(mapStateToProps)(PictureList);

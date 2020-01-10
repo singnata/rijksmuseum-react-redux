@@ -2,14 +2,38 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { fetchPictureInfo } from '../../actions/fetchDataActions';
+import { fetchPictureInfo } from '../../actions/pictureActions';
 import pictureDetailsStyles from './PictureDetailsStyles';
 
-class PictureDetails extends Component {
+interface PictureDetailsProps {
+  fetchPictureInfo: typeof fetchPictureInfo,
+  match: any,
+  classes: any,
+  picture: {
+    title: string,
+    artObject: {
+      materials: [],
+      objectTypes: [],
+      hasImage: boolean,
+      webImage: {
+        url: string
+      },
+      principalOrFirstMaker: [],
+      longTitle: string,
+      description: string,
+      dating: {
+        presentingDate: string
+      }
+    },
+
+  },
+  isLoading: boolean
+}
+
+class PictureDetails extends Component<PictureDetailsProps> {
   componentDidMount() {
     this.getPictureInfo();
   }
@@ -32,8 +56,8 @@ class PictureDetails extends Component {
           <img src={picture.artObject.webImage.url} alt={picture.title} />
         </div>
       ) : (
-        <div className={classes.noImage}>No image</div>
-      );
+          <div className={classes.noImage}>No image</div>
+        );
 
     if (isLoading) {
       return <CircularProgress className={classes.progress} color="secondary" />;
@@ -82,16 +106,10 @@ class PictureDetails extends Component {
   }
 }
 
-pictureDetailsStyles.propTypes = {
-  classes: PropTypes.object.isRequired,
-  picture: PropTypes.object.object,
-  isLoading: PropTypes.object.bool,
-};
-
 const mapStateToProps = (state) => {
   return {
-    picture: state.collectionState.picture,
-    isLoading: state.collectionState.isLoading,
+    picture: state.picturesState.picture,
+    isLoading: state.picturesState.isLoading,
   };
 };
 const mapDispatchToProps = (dispatch) => {

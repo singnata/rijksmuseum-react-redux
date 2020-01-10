@@ -8,7 +8,7 @@ function ErrorBoundary({ isError, children }) {
 
 const mapStateToProps = (state) => {
   return {
-    isError: state.collectionState.isError,
+    isError: state.picturesState.isError,
   };
 };
 

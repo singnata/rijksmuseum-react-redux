@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -9,7 +8,26 @@ import { closePictureDetailsPopUp } from '../../actions/pictureActions';
 
 import collectionStyles from './CollectionStyles';
 
-const PictureDetailsPopUp = ({ classes, picture, closePictureDetailsPopUp }) => {
+interface PictureDetilsPopUpProps {
+  classes?: any;
+  picture: {
+    isPictureTitleShown: boolean,
+    hasImage: any,
+    title: string,
+    headerImage: {
+      url: string
+    },
+    longTitle: string,
+    popUpTarget: any,
+    id: string,
+    productionPlaces: [],
+    principalOrFirstMaker: string,
+    objectNumber: string
+  },
+  closePictureDetailsPopUp: typeof closePictureDetailsPopUp,
+}
+
+const PictureDetailsPopUp = withStyles(collectionStyles)(({ classes, picture, closePictureDetailsPopUp }: PictureDetilsPopUpProps) => {
   const isThereProductionPlace = picture.productionPlaces && picture.productionPlaces.length !== 0;
   const productionPlace = picture.productionPlaces.map((item, index) => {
     return <span key={index}>{item} </span>;
@@ -27,10 +45,10 @@ const PictureDetailsPopUp = ({ classes, picture, closePictureDetailsPopUp }) => 
       <img src={picture.headerImage.url} alt={picture.title} />
     </div>
   ) : (
-    <div className={classes.noImage}>No image</div>
-  );
+      <div className={classes.noImage}>No image</div>
+    );
 
-  const handleClosePopUp = (event) => {
+  const handleClosePopUp = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     closePictureDetailsPopUp({ selectedPicture: picture, popUpTarget: null });
   };
@@ -65,13 +83,14 @@ const PictureDetailsPopUp = ({ classes, picture, closePictureDetailsPopUp }) => 
       </div>
     </div>
   );
-};
+});
 
-PictureDetailsPopUp.propTypes = {
-  classes: PropTypes.object.isRequired,
-  handleClosePictureDetails: PropTypes.func,
+const mapStateToProps = (state, ownState) => {
+  return {
+    picture: ownState.picture,
+    classes: ownState.classes,
+  };
 };
-
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
@@ -82,6 +101,6 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
-)(withStyles(collectionStyles)(PictureDetailsPopUp));
+)(PictureDetailsPopUp);
